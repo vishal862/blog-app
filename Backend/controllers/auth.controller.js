@@ -1,18 +1,19 @@
 import { User } from "../models/user.model.js";
 import bcryptjs from 'bcryptjs'
+import { errorHandler } from "../utils/error.js";
 
-export const signUp =async(req,res)=>{
+export const signUp =async(req,res,next)=>{
     try {
         const {username,email,password} = req.body;
     
         if(!username || !password || !email || username === '' || email === '' || password === ''){
-            return res.status(400).json({message:'all fields are required'})
+            next(errorHandler(400,'All Fields are required!'))
         }
     
         const existedUser = await User.findOne({username,email});
     
         if(existedUser){
-            return res.status(500).json({message:'use exist'});
+            next(errorHandler(400,'User Exists!'))
         }
 
         const hashedPassword = await bcryptjs.hash(password,10)
@@ -25,6 +26,6 @@ export const signUp =async(req,res)=>{
     
         return res.status(200).json({message:'user created successfully',user})
     } catch (error) {
-        res.status(500).json(error.message || 'internal server error')
+        next(error);
     }
 }
