@@ -1,4 +1,4 @@
-import { Alert, Button, TextInput } from "flowbite-react";
+import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";
@@ -15,7 +15,12 @@ import {
   updateStart,
   updateSuccess,
   updateFailure,
+  deleteStart,
+  deleteSuccess,
+  deleteFailure
 } from "../redux/users/userSlice";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
+
 
 export default function DashProfile() {
   const dispatch = useDispatch();
@@ -29,6 +34,8 @@ export default function DashProfile() {
   const [formData, setFormData] = useState({});
   const [userUpdateSuccess, setUserUpdateSuccess] = useState(null);
   const [userUpdateError, setUserUpdateError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [deleteUserFailure, setDeleteUserFailure] = useState(null)
 
   console.log(formData);
 
@@ -88,8 +95,8 @@ export default function DashProfile() {
   };
 
   const handleSubmit = async (e) => {
-    setUserUpdateError(null)
-    setUserUpdateSuccess(null)
+    setUserUpdateError(null);
+    setUserUpdateSuccess(null);
     e.preventDefault();
     if (Object.keys(formData).length === 0) {
       setUserUpdateError("No changes made!");
@@ -134,6 +141,26 @@ export default function DashProfile() {
       dispatch(updateFailure(error.message));
       setUserUpdateError(error.message);
     }
+  };
+
+  const handleDelete = async () => {
+    setShowModal(false)
+   try {
+    dispatch(deleteStart())
+     const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+       method: "DELETE",
+     });
+     const data = await res.json();
+     if(!res.ok){
+      dispatch(deleteFailure(data.message))
+      setDeleteUserFailure(data.message)
+     }else{
+      dispatch(deleteSuccess(data))
+     }
+   } catch (error) {
+    dispatch(deleteFailure(error.message))
+    setDeleteUserFailure(error.message)
+   }
   };
 
   return (
@@ -204,8 +231,10 @@ export default function DashProfile() {
         </Button>
       </form>
       <div className="flex justify-between mt-9">
-        <span className=" text-red-500">Delete Account</span>
-        <span className=" text-red-500">Sign Out</span>
+        <button onClick={() => setShowModal(true)} className=" text-red-500">
+          Delete Account
+        </button>
+        <button className=" text-red-500">Sign Out</button>
       </div>
       {userUpdateSuccess && (
         <Alert className="mt-5" color="success">
@@ -217,6 +246,24 @@ export default function DashProfile() {
           {userUpdateError}
         </Alert>
       )}
+      {
+        deleteUserFailure && (
+          <Alert className="mt-5" color='failure'>{deleteUserFailure}</Alert>
+        )
+      }
+      <Modal show={showModal} onClose={() => setShowModal(false)} size='md'>
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <AiOutlineExclamationCircle className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-200 mb-4" />
+            <h1 className="mb-5 text-lg text-gray-500 dark:text-gray-400">Are you sure you want to delete the account?</h1>
+            <div className="flex justify-center gap-4">
+              <Button onClick={handleDelete} color='failure'>Yes, I'm sure</Button>
+              <Button onClick={()=>setShowModal(false)} color='gray'>No, Cancel</Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
