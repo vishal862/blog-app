@@ -1,11 +1,17 @@
-import express from 'express'
-import { deleteUser, testApi, updateUser } from "../controllers/user.controller.js";
-import {verifyUser} from '../middlewares/verifyUser.js';
+import express from "express";
+import {
+  deleteUser,
+  signOut,
+  testApi,
+  updateUser,
+} from "../controllers/user.controller.js";
+import { verifyUser } from "../middlewares/verifyUser.js";
 
 const router = express.Router();
 
-router.get('/test',testApi)
-router.put('/update/:userId',verifyUser,updateUser)
-router.delete('/delete/:userId',verifyUser,deleteUser)
+router.get("/test", testApi);
+router.put("/update/:userId", verifyUser, updateUser);
+router.delete("/delete/:userId", verifyUser, deleteUser);
+router.post("/signout", signOut);
 
-export default router
+export default router;
