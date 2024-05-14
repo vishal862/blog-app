@@ -257,7 +257,7 @@ export default function DashProfile() {
             type="button"
             className="w-full"
           >
-            Create Post
+            Create a Post
           </Button>
           </Link>
         )}
