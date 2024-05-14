@@ -87,6 +87,7 @@ export default function DashProfile() {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
           setImageFileUrl(downloadUrl);
           setFormData({ ...formData, profilePicture: downloadUrl });
+          setImageFileUPloadProgress(null)
         });
       }
     );
