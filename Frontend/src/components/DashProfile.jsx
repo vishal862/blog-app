@@ -18,15 +18,15 @@ import {
   deleteStart,
   deleteSuccess,
   deleteFailure,
-  signOutSuccess
+  signOutSuccess,
 } from "../redux/users/userSlice";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
-
+import {Link} from 'react-router-dom'
 
 export default function DashProfile() {
   const dispatch = useDispatch();
   const filePickRef = useRef();
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser ,loading} = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
@@ -36,7 +36,7 @@ export default function DashProfile() {
   const [userUpdateSuccess, setUserUpdateSuccess] = useState(null);
   const [userUpdateError, setUserUpdateError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [deleteUserFailure, setDeleteUserFailure] = useState(null)
+  const [deleteUserFailure, setDeleteUserFailure] = useState(null);
 
   console.log(formData);
 
@@ -145,42 +145,42 @@ export default function DashProfile() {
   };
 
   const handleDelete = async () => {
-    setShowModal(false)
-   try {
-    dispatch(deleteStart())
-     const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-       method: "DELETE",
-     });
-     const data = await res.json();
-    //  console.log(data);
-     if(!res.ok){
-      dispatch(deleteFailure(data.message))
-      setDeleteUserFailure(data.message)
-     }else{
-      dispatch(deleteSuccess(data))
-     }
-   } catch (error) {
-    dispatch(deleteFailure(error.message))
-    setDeleteUserFailure(error.message)
-   }
+    setShowModal(false);
+    try {
+      dispatch(deleteStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      //  console.log(data);
+      if (!res.ok) {
+        dispatch(deleteFailure(data.message));
+        setDeleteUserFailure(data.message);
+      } else {
+        dispatch(deleteSuccess(data));
+      }
+    } catch (error) {
+      dispatch(deleteFailure(error.message));
+      setDeleteUserFailure(error.message);
+    }
   };
 
-  const handleSignOut = async ()=>{
+  const handleSignOut = async () => {
     try {
-      const res = await fetch('/api/user/signout',{
-        method : 'POST'
-      })
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
       const data = await res.json();
 
-      if(!res.ok){
+      if (!res.ok) {
         console.log(data.message);
-      }else{
-        dispatch(signOutSuccess())
+      } else {
+        dispatch(signOutSuccess());
       }
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-lg mx-auto p-3">
@@ -245,15 +245,30 @@ export default function DashProfile() {
           placeholder="*********"
           onChange={handleChange}
         />
-        <Button gradientDuoTone="purpleToBlue" outline type="submit">
-          Update
+        <Button gradientDuoTone="purpleToBlue" outline type="submit" disabled={loading || imageFileUploading}>
+          {
+            loading ? 'Loading...' : 'Update'
+          }
         </Button>
+        {currentUser.isAdmin && (
+          <Link to='/create-post'>
+            <Button
+            gradientDuoTone="purpleToPink"
+            type="button"
+            className="w-full"
+          >
+            Create Post
+          </Button>
+          </Link>
+        )}
       </form>
       <div className="flex justify-between mt-9">
         <button onClick={() => setShowModal(true)} className=" text-red-500">
           Delete Account
         </button>
-        <button onClick={handleSignOut} className=" text-red-500">Sign Out</button>
+        <button onClick={handleSignOut} className=" text-red-500">
+          Sign Out
+        </button>
       </div>
       {userUpdateSuccess && (
         <Alert className="mt-5" color="success">
@@ -265,20 +280,26 @@ export default function DashProfile() {
           {userUpdateError}
         </Alert>
       )}
-      {
-        deleteUserFailure && (
-          <Alert className="mt-5" color='failure'>{deleteUserFailure}</Alert>
-        )
-      }
-      <Modal show={showModal} onClose={() => setShowModal(false)} size='md'>
+      {deleteUserFailure && (
+        <Alert className="mt-5" color="failure">
+          {deleteUserFailure}
+        </Alert>
+      )}
+      <Modal show={showModal} onClose={() => setShowModal(false)} size="md">
         <Modal.Header />
         <Modal.Body>
           <div className="text-center">
             <AiOutlineExclamationCircle className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-200 mb-4" />
-            <h1 className="mb-5 text-lg text-gray-500 dark:text-gray-400">Are you sure you want to delete the account?</h1>
+            <h1 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete the account?
+            </h1>
             <div className="flex justify-center gap-4">
-              <Button onClick={handleDelete} color='failure'>Yes, I'm sure</Button>
-              <Button onClick={()=>setShowModal(false)} color='gray'>No, Cancel</Button>
+              <Button onClick={handleDelete} color="failure">
+                Yes, I'm sure
+              </Button>
+              <Button onClick={() => setShowModal(false)} color="gray">
+                No, Cancel
+              </Button>
             </div>
           </div>
         </Modal.Body>
