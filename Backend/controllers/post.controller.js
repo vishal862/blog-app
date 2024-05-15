@@ -32,7 +32,7 @@ export const getPost = async (req,res,next)=>{
         const startIndex = parseInt(req.query.StartIndex) || 0;
         const limit = parseInt(req.query.limit) || 0;
         const sortDirections = parseInt(req.query.order == 'asc' ? 1 : -1);
-        const post = await Post.find({
+        const posts = await Post.find({
             // means it kind of like it checks if a userId is present or not if present it stores in an 
             // object and then it checks if category is present or not if it is then it remembers the previous 
             // entry of userId and alongside it stores the category and so on
@@ -83,7 +83,7 @@ export const getPost = async (req,res,next)=>{
         })
     
         res.status(200).json({
-            post,
+            posts,
             totalPosts,
             lastMonthPosts
         })
