@@ -29,11 +29,11 @@ export const createPost = async (req,res,next)=>{
 
 export const getPost = async (req,res,next)=>{
     try {
-        const startIndex = parseInt(req.query.StartIndex) || 0;
+        const startIndex = parseInt(req.query.startIndex) || 0;
         const limit = parseInt(req.query.limit) || 0;
         const sortDirections = parseInt(req.query.order == 'asc' ? 1 : -1);
         const posts = await Post.find({
-            // means it kind of like it checks if a userId is present or not if present it stores in an 
+            //(use of spread op) means it kind of like it checks if a userId is present or not if present it stores in an 
             // object and then it checks if category is present or not if it is then it remembers the previous 
             // entry of userId and alongside it stores the category and so on
 
