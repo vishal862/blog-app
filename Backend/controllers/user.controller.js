@@ -50,19 +50,19 @@ export const updateUser = async (req,res,next)=>{
 }
 
 export const deleteUser = async (req,res,next)=>{
-    if(req.user.id !== req.params.userId){
+    if(!req.user.isAdmin && req.user.id !== req.params.userId){
         return next(errorHandler(400,'You can not update this user unless he is your dad'))
     }
 
     try {
-        await User.findByIdAndDelete(req.user.id);
+        await User.findByIdAndDelete(req.params.userId);
         return res.status(200).json('user has been deleted!')
     } catch (error) {
         next(error)
     }
 }
 
-export const signOut = async (req,res,next) => {
+export const signOut = async (req,res,next)=>{
   try {
     return res.clearCookie('access_token').status(200).json('User signed out successfully!')
   } catch (error) {
@@ -70,7 +70,7 @@ export const signOut = async (req,res,next) => {
   }
 }
 
-export const getUsers = async (req,res,next) =>{
+export const getUsers = async (req,res,next)=>{
     if(!req.user.isAdmin){
         return next(errorHandler(400,'You are not allowed to see the users'))
     }
