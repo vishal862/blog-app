@@ -12,6 +12,7 @@ import PrivateRoute from './components/PrivateRoute'
 import AdminPrivateRoute from './components/AdminPrivateRoute'
 import CreatePost from './components/CreatePost'
 import UpdatePost from './pages/UpdatePost'
+import GetUsers from './pages/GetUsers'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route element={<AdminPrivateRoute/>}>
           <Route path='/create-post' element={<CreatePost/>}/>
           <Route path='/update-post/:postId' element={<UpdatePost/>}/>
+          <Route path='/users' element={<GetUsers/>}/>
         </Route>
         <Route path='/about' element={<About/>}/>
         <Route path='/projects' element={<Projects/>}/>

@@ -36,6 +36,12 @@ export default function UpdatePost() {
   useEffect(() => {
     try {
         const fetchPost = async()=>{
+          //how useParams will fetch the postId from the params?
+          //basically useParams will match the route defin with the url from the params that is in address bar
+          //which is :<Route path='/update-post/:postId' element={<UpdatePost/>}/> &&
+          // http://localhost:5173/update-post/66490f3d43dc775195e433a4
+          //so thats how the postId will be fetched
+
             const res = await fetch(`/api/post/getPost?postId=${postId}`)
             const data = await res.json();
             if(!res.ok){
