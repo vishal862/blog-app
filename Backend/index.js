@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import userRoute from '../Backend/routes/user.routes.js'
 import authRoute from '../Backend/routes/auth.routes.js'
 import postRoute from '../Backend/routes/post.routes.js'
+import commentRoute from '../Backend/routes/comment.routes.js'
 import cookieParser from 'cookie-parser';
 
 const app = express();
@@ -24,7 +25,8 @@ app.listen(3000,()=> {
 
 app.use('/api/user',userRoute);
 app.use('/api/auth',authRoute);
-app.use('/api/post',postRoute)
+app.use('/api/post',postRoute);
+app.use('/api/comment',commentRoute);
 
 app.use((err,req,res,next)=>{
     const statusCode = err.statusCode || 500;

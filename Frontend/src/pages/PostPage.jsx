@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Button, Spinner } from "flowbite-react";
 import CallToAction from "../components/CallToAction";
+import Comments from "../components/Comments";
 
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -71,7 +72,10 @@ export default function PostPage() {
         dangerouslySetInnerHTML={{ __html: post && post.content }}
       ></div>
       <div className="max-w-4xl mx-auto w-full">
-        <CallToAction/>
+        <CallToAction />
+      </div>
+      <div className="max-w-4xl mx-auto w-full">
+        <Comments postId={post._id} />
       </div>
     </main>
   );
