@@ -6,6 +6,11 @@ import Comments from "../components/Comments";
 
 export default function PostPage() {
   const { postSlug } = useParams();
+  //******************************** important ******************************************/
+  
+  //everything in this page has been possible bcz of this one {slug} 
+  //we search in db for the post based on this slug
+
   //here postSlug is specifically used bcz in App.jsx we have configured a route of that name
   //<Route path='/posts/:postSlug' element={<PostPage/>}/>
   const [loading, setLoading] = useState(true);

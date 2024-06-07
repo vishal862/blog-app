@@ -1,7 +1,8 @@
 import { Alert, Button, Textarea } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import EachComment from "./EachComment";
 
 export default function Comments({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -9,6 +10,8 @@ export default function Comments({ postId }) {
   const [comment, setComment] = useState("");
   const [charRemaining, setCharRemaining] = useState(200);
   const [commentError, setCommentError] = useState(null);
+  const [comments, setComments] = useState([]);
+  console.log(comments);
 
   const handleChange = (e) => {
     setComment(e.target.value);
@@ -37,11 +40,30 @@ export default function Comments({ postId }) {
       if (res.ok) {
         setComment("");
         setCommentError(null);
+        setComments([data, ...comments]);
+        //data is new comment that has been added and ...comments are the comments that are already present
+        //so we are keeping the previous comments and adding the new comment i.e data to the 1st place
+        setCharRemaining(200);
       }
     } catch (error) {
       setCommentError(error.messsage);
     }
   };
+
+  useEffect(() => {
+    const fetchComments = async (e) => {
+      try {
+        const res = await fetch(`/api/comment/showComments/${postId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setComments(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchComments();
+  }, [postId]);
 
   return (
     <div className="max-w-2xl w-full p-3 mx-auto">
@@ -91,6 +113,21 @@ export default function Comments({ postId }) {
             </Alert>
           )}
         </form>
+      )}
+      {comments.length === 0 ? (
+        <p className="text-sm my-5">No comments</p>
+      ) : (
+        <>
+          <div className="flex gap-2 my-5 items-center">
+            <p>Comments</p>
+            <div className="border ">
+              <p className="px-2">{comments.length}</p>
+            </div>
+          </div>
+          {comments.map((comment) => (
+            <EachComment key={comment._id} comment={comment} />
+          ))}
+        </>
       )}
     </div>
   );

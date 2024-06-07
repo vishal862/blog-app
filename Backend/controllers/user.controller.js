@@ -110,3 +110,15 @@ export const getUsers = async (req,res,next)=>{
         next(error)
     }
 }
+
+export const getUser = async (req,res,next)=>{
+    try {
+        const {userId} = req.params;
+    
+        const user = await User.findById(userId).select(["-password"]);
+    
+        return res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+}
