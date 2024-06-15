@@ -1,13 +1,14 @@
 import { Alert, Button, Textarea } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import EachComment from "./EachComment";
 
 export default function Comments({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState("");//the comment that is we will write in that comment box
   const [charRemaining, setCharRemaining] = useState(200);
   const [commentError, setCommentError] = useState(null);
   const [comments, setComments] = useState([]);
@@ -64,6 +65,30 @@ export default function Comments({ postId }) {
     };
     fetchComments();
   }, [postId]);
+
+  const handleLike = async (commentId) => {
+    try {
+      if (!currentUser) {
+        navigate("/sign-in");
+        return;
+      }
+      const res = await fetch(`/api/comment/likeComment/${commentId}`, {
+        method: "PUT",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setComments(comments.map((comment)=>(
+          comment._id === commentId ? {
+            ...comment,
+            likes : data.likes,
+            numberOfLikes : data.likes.length
+          } : comment
+        )))
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="max-w-2xl w-full p-3 mx-auto">
@@ -125,7 +150,11 @@ export default function Comments({ postId }) {
             </div>
           </div>
           {comments.map((comment) => (
-            <EachComment key={comment._id} comment={comment} />
+            <EachComment
+              key={comment._id}
+              comment={comment}
+              onLike={handleLike}
+            />
           ))}
         </>
       )}
