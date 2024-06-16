@@ -54,7 +54,42 @@ export const likeComment = async (req, res, next) => {
     }
 
     await comment.save();
-    return res.status(200).json(comment)
+    return res.status(200).json(comment);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const editComment = async (req, res, next) => {
+  try {
+    const { commentId } = req.params;
+    const { content } = req.body;
+
+    if (!commentId) {
+      return next(errorHandler(404, "comment not found"));
+    }
+
+    if (!content) {
+      return next(errorHandler(400, "please enter the content"));
+    }
+
+    let comment = await Comment.findById(commentId);
+    console.log(comment);
+
+    if (req.user.id !== comment.userId && !req.user.isAdmin) {
+      return next(
+        errorHandler(403, "You do not have permission to edit this comment")
+      );
+    }
+    comment = await Comment.findByIdAndUpdate(
+      commentId,
+      {
+        content: content,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json(comment);
   } catch (error) {
     next(error);
   }
