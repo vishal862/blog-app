@@ -1,17 +1,20 @@
-import { Alert, Button, Textarea } from "flowbite-react";
+import { Alert, Button, Modal, Textarea } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import EachComment from "./EachComment";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 export default function Comments({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
-  const [comment, setComment] = useState("");//the comment that is we will write in that comment box
+  const [comment, setComment] = useState(""); //the comment that is we will write in that comment box
   const [charRemaining, setCharRemaining] = useState(200);
   const [commentError, setCommentError] = useState(null);
   const [comments, setComments] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [commentToBeDeleted, setCommentToBeDeleted] = useState(null);
   console.log(comments);
 
   const handleChange = (e) => {
@@ -77,25 +80,51 @@ export default function Comments({ postId }) {
       });
       if (res.ok) {
         const data = await res.json();
-        setComments(comments.map((comment)=>(
-          comment._id === commentId ? {
-            ...comment,
-            likes : data.likes,
-            numberOfLikes : data.likes.length
-          } : comment
-        )))
+        console.log(data);
+        setComments(
+          comments.map((comment) =>
+            //jyawr(commentId) like zaly tyachyashi match karnar (with every comment on that page)and update it's data
+            comment._id === commentId
+              ? {
+                  ...comment,
+                  likes: data.likes,
+                  numberOfLikes: data.likes.length,
+                }
+              : comment
+          )
+        );
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleEdit = async (comment , editContent)=>{
+  //for frontend
+  const handleEdit = async (comment, editContent) => {
     setComments(
-      comments.map((c)=>
-        c._id === comment._id ? {...c, content : editContent} : c
-    ))
-  }
+      comments.map((c) =>
+        c._id === comment._id ? { ...c, content: editContent } : c
+      )
+    );
+  };
+
+  const handleDelete = async (commentId) => {
+    try {
+      if (!currentUser) {
+        navigate("/sign-in");
+        return;
+      }
+      const res = await fetch(`/api/comment/deleteComment/${commentId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setComments(comments.filter((comment) => comment._id !== commentId));
+        setShowModal(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="max-w-2xl w-full p-3 mx-auto">
@@ -162,10 +191,39 @@ export default function Comments({ postId }) {
               comment={comment}
               onLike={handleLike}
               onEdit={handleEdit}
+              onDelete={(commentId) => {
+                setShowModal(true);
+                setCommentToBeDeleted(commentId);
+              }}
             />
           ))}
         </>
       )}
+      <Modal show={showModal} onClose={() => setShowModal(false)} size="md">
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <AiOutlineExclamationCircle className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-200 mb-4" />
+            <h1 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete the Post?
+            </h1>
+            <div className="flex justify-center gap-4">
+              <Button
+                onClick={() => {
+                  handleDelete(commentToBeDeleted);
+                  setShowModal(false);
+                }}
+                color="failure"
+              >
+                Yes, I'm sure
+              </Button>
+              <Button onClick={() => setShowModal(false)} color="gray">
+                No, Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

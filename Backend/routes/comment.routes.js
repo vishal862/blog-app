@@ -1,5 +1,6 @@
 import {
   createComment,
+  deleteComment,
   editComment,
   likeComment,
   showComments,
@@ -13,5 +14,6 @@ router.post("/create", verifyUser, createComment);
 router.get("/showComments/:postId", showComments);
 router.put("/likeComment/:commentId",verifyUser,likeComment);
 router.put("/editComment/:commentId",verifyUser,editComment);
+router.delete("/deleteComment/:commentId",verifyUser,deleteComment);
 
 export default router;
