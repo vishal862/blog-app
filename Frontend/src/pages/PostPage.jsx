@@ -3,12 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Spinner } from "flowbite-react";
 import CallToAction from "../components/CallToAction";
 import Comments from "../components/Comments";
+import PostCard from "../components/PostCard";
 
 export default function PostPage() {
   const { postSlug } = useParams();
   //******************************** important ******************************************/
-  
-  //everything in this page has been possible bcz of this one {slug} 
+
+  //everything in this page has been possible bcz of this one {slug}
   //we search in db for the post based on this slug
 
   //here postSlug is specifically used bcz in App.jsx we have configured a route of that name
@@ -16,6 +17,8 @@ export default function PostPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
+  const [recentPosts, setRecentPosts] = useState(null);
+  console.log(recentPosts);
   console.log(post);
   useEffect(() => {
     const fetchPosts = async () => {
@@ -42,6 +45,21 @@ export default function PostPage() {
     };
     fetchPosts();
   }, [postSlug]);
+
+  useEffect(() => {
+    try {
+      const fetchPosts = async () => {
+        const res = await fetch("/api/post/getPost?limit=3");
+        const data = await res.json();
+        if (res.ok) {
+          setRecentPosts(data.posts);
+        }
+      };
+      fetchPosts();
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -81,6 +99,13 @@ export default function PostPage() {
       </div>
       <div className="max-w-4xl mx-auto w-full">
         <Comments postId={post._id} />
+      </div>
+      <div className="flex flex-col justify-center items-center">
+        <h1 className="text-xl mt-5">Recent articles</h1>
+        <div className="flex flex-wrap gap-5 justify-center mt-5">
+          {recentPosts &&
+            recentPosts.map((post) => <PostCard key={post._id} post={post} />)}
+        </div>
       </div>
     </main>
   );
