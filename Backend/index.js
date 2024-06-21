@@ -6,9 +6,12 @@ import authRoute from '../Backend/routes/auth.routes.js'
 import postRoute from '../Backend/routes/post.routes.js'
 import commentRoute from '../Backend/routes/comment.routes.js'
 import cookieParser from 'cookie-parser';
+import path from 'path'
 
 const app = express();
 dotenv.config();
+
+const __dirname = path.resolve();
 
 app.use(express.json())
 app.use(cookieParser())
@@ -27,6 +30,12 @@ app.use('/api/user',userRoute);
 app.use('/api/auth',authRoute);
 app.use('/api/post',postRoute);
 app.use('/api/comment',commentRoute);
+
+app.use(express.static(path.join(__dirname,'/Frontend/dist')))
+
+app.get('*',(req,res)=>{
+    res.sendFile(path.join(__dirname,'Frontend','dist','index.html'))
+})
 
 app.use((err,req,res,next)=>{
     const statusCode = err.statusCode || 500;
