@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation,useNavigate } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,6 +14,20 @@ export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
 
   const path = useLocation().pathname;
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    //here what we type in url comes in search box
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if(searchTermFromUrl){
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search])
+   
 
   const handleSignOut = async ()=>{
     try {
@@ -31,6 +45,14 @@ export default function Header() {
       console.log(error.message);
     }
   }
+  const handleSubmit =(e)=>{
+    //here what we type in search box will get in to the url
+    e.preventDefault();
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set('searchTerm' , searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  }
   return (
     <Navbar className="border-b-2">
       <Link
@@ -42,10 +64,12 @@ export default function Header() {
         </span>
         Blog
       </Link>
-      <form>
+      <form onSubmit={handleSubmit}>
         <TextInput
           type="text"
           placeholder="search.."
+          value={searchTerm}
+          onChange={(e)=>setSearchTerm(e.target.value)}
           rightIcon={AiOutlineSearch}
           className="hidden lg:inline"
         />

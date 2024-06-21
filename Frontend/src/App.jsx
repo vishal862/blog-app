@@ -15,6 +15,7 @@ import UpdatePost from "./pages/UpdatePost";
 import GetUsers from "./pages/GetUsers";
 import PostPage from "./pages/PostPage";
 import ScrollToTop from "./components/ScrollToTop";
+import Search from "./components/Search"
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/projects" element={<Projects />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/sign-in" element={<Signin />} />
+        <Route path="/search" element={<Search/>} />
         <Route path="/posts/:postSlug" element={<PostPage />} />
       </Routes>
       <FooterCode />

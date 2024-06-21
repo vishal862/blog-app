@@ -114,7 +114,7 @@ export default function CreatePost() {
           />
           <Select onChange={(e)=>setFormData({...formData,category : e.target.value})}>
             <option value={"uncategorized"}>Select a Category</option>
-            <option value={"javajcript"}>JavaScript</option>
+            <option value={"javascript"}>JavaScript</option>
             <option value={"reactjs"}>React.js</option>
             <option value={"nextjs"}>Next.js</option>
           </Select>

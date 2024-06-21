@@ -126,7 +126,7 @@ export default function UpdatePost() {
       }if(res.ok){
         setPublishError(null);
         setPublishSuccess('Post Created successfully')
-        navigate(`/post/${data.slug}`)
+        navigate(`/posts/${data.slug}`)
       }
     } catch (error) {
       setPublishError('Something went wrong')
@@ -199,8 +199,9 @@ export default function UpdatePost() {
           type="submit"
           className="mb-6"
           gradientDuoTone={"purpleToPink"}
+          disabled={fileUploadProgress}
         >
-          Publish
+          Update
         </Button>
         {
           publishError && (
