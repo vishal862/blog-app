@@ -92,7 +92,7 @@ export default function CreatePost() {
       }if(res.ok){
         setPublishError(null);
         setPublishSuccess('Post Created successfully')
-        navigate(`/post/${data.slug}`)
+        navigate(`/posts/${data.slug}`)
       }
     } catch (error) {
       setPublishError('Something went wrong')
