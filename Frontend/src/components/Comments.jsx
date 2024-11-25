@@ -178,26 +178,28 @@ export default function Comments({ postId }) {
       {comments.length === 0 ? (
         <p className="text-sm my-5">No comments</p>
       ) : (
-        <>
-          <div className="flex gap-2 my-5 items-center">
-            <p>Comments</p>
-            <div className="border ">
-              <p className="px-2">{comments.length}</p>
-            </div>
-          </div>
-          {comments.map((comment) => (
-            <EachComment
-              key={comment._id}
-              comment={comment}
-              onLike={handleLike}
-              onEdit={handleEdit}
-              onDelete={(commentId) => {
-                setShowModal(true);
-                setCommentToBeDeleted(commentId);
-              }}
-            />
-          ))}
-        </>
+        <React.Fragment>
+      <div className="flex gap-2 my-5 items-center">
+        <p>Comments</p>
+        <div className="border px-2">
+          <p>{comments.length}</p>
+        </div>
+      </div>
+
+      {comments.length > 0 ? (
+        comments.map((comm) => (
+          <EachComment
+            key={comm._id}
+            comment={comm}
+            onLike={handleLike}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        ))
+      ) : (
+        <p className="text-gray-500">No comments available.</p>
+      )}
+    </React.Fragment>
       )}
       <Modal show={showModal} onClose={() => setShowModal(false)} size="md">
         <Modal.Header />
