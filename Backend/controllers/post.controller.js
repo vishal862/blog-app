@@ -9,6 +9,9 @@ export const createPost = async (req, res, next) => {
     return next(errorHandler(400, "All fields are required"));
   }
 
+  console.log(req.body);
+  
+
   const slug = req.body.title
     .split(" ")
     .join("-")
@@ -24,6 +27,8 @@ export const createPost = async (req, res, next) => {
       slug,
       userId: req.user.id,
     });
+    console.log(post);
+    
     return res.status(200).json(post);
   } catch (error) {
     next(error);

@@ -40,15 +40,26 @@ export default function Comments({ postId }) {
           userId: currentUser._id,
         }),
       });
-      const data = await res.json();
+      // const data = await res.json();
       if (res.ok) {
         setComment("");
         setCommentError(null);
-        setComments([data, ...comments]);
-        //data is new comment that has been added and ...comments are the comments that are already present
-        //so we are keeping the previous comments and adding the new comment i.e data to the 1st place
         setCharRemaining(200);
+      
+        // Re-fetch all comments to get fully populated data
+        const updatedRes = await fetch(`/api/comment/showComments/${postId}`);
+        if (updatedRes.ok) {
+          const updatedData = await updatedRes.json();
+          setComments(updatedData);
+        }
       }
+      // if (res.ok) {
+      //   setComment("");
+      //   setCommentError(null);
+      //   setComments([data, ...comments]);
+        
+      //   setCharRemaining(200);
+      // }
     } catch (error) {
       setCommentError(error.messsage);
     }
@@ -178,28 +189,28 @@ export default function Comments({ postId }) {
       {comments.length === 0 ? (
         <p className="text-sm my-5">No comments</p>
       ) : (
-        <React.Fragment>
-      <div className="flex gap-2 my-5 items-center">
-        <p>Comments</p>
-        <div className="border px-2">
-          <p>{comments.length}</p>
-        </div>
-      </div>
+        <React.Fragment key={postId}>
+          <div className="flex gap-2 my-5 items-center">
+            <p>Comments</p>
+            <div className="border px-2">
+              <p>{comments.length}</p>
+            </div>
+          </div>
 
-      {comments.length > 0 ? (
-        comments.map((comm) => (
-          <EachComment
-            key={comm._id}
-            comment={comm}
-            onLike={handleLike}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        ))
-      ) : (
-        <p className="text-gray-500">No comments available.</p>
-      )}
-    </React.Fragment>
+          {comments.length > 0 ? (
+            comments.map((comm) => (
+              <EachComment
+                key={comm._id}
+                comment={comm}
+                onLike={handleLike}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500">No comments available.</p>
+          )}
+        </React.Fragment>
       )}
       <Modal show={showModal} onClose={() => setShowModal(false)} size="md">
         <Modal.Header />
