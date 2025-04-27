@@ -4,10 +4,14 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import EachComment from "./EachComment";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
+import { useDispatch } from 'react-redux';
+import { signOutSuccess } from '../redux/users/userSlice'; // adjust the path if needed
 
 export default function Comments({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
 
   const [comment, setComment] = useState(""); //the comment that is we will write in that comment box
   const [charRemaining, setCharRemaining] = useState(200);
@@ -40,7 +44,16 @@ export default function Comments({ postId }) {
           userId: currentUser._id,
         }),
       });
+      console.log(res);
+      
       // const data = await res.json();
+      if (res.status === 401) {
+        dispatch(signOutSuccess()); // this will clear user from Redux
+        localStorage.removeItem('user');
+        localStorage.removeItem('_persist');
+        navigate('/sign-in');
+      }
+      
       if (res.ok) {
         setComment("");
         setCommentError(null);
@@ -61,7 +74,7 @@ export default function Comments({ postId }) {
       //   setCharRemaining(200);
       // }
     } catch (error) {
-      setCommentError(error.messsage);
+      setCommentError(error.message);
     }
   };
 
